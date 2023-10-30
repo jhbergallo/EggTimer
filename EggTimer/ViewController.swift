@@ -19,12 +19,13 @@ class ViewController: UIViewController {
     
     var totalTime = 0
     var secondsPassed = 0
-    
+    var mainLabel = "How do you like your eggs?"
 
     var timer = Timer()
     
     @IBAction func buttons(_ sender: UIButton) {
         let hardness = sender.currentTitle!
+        
         
         stopButtonProp.isHidden = false
     
@@ -46,7 +47,7 @@ class ViewController: UIViewController {
         progressView.progress = 0.0
         secondsPassed = 0
         stopButtonProp.isHidden = true
-        titleLabel.text = "How do you like your eggs?"
+        titleLabel.text = mainLabel
     }
     
     @objc func updateTimer(){
@@ -54,15 +55,24 @@ class ViewController: UIViewController {
             secondsPassed += 1
             progressView.progress = Float(secondsPassed)/Float(totalTime)
         } else{
+            stopButtonProp.isHidden = true
             timer.invalidate()
             titleLabel.text = "Done!"
             playSound()
+            
+            timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false){_ in
+                self.titleLabel.text = self.mainLabel
+                self.progressView.progress = 0.0
+            }
         }
     }
     
     var player: AVAudioPlayer?
 
     func playSound() {
+        if #available(iOS 14.5, *) {
+             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+          }
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback)
         } catch(let error) {
