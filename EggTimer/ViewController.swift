@@ -15,17 +15,17 @@ class ViewController: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var progressView: UIProgressView!
     
-    let eggTimes = ["Soft": 300, "Medium": 420, "Hard": 720]
+    let eggTimes = ["Soft": 3, "Medium": 420, "Hard": 720]
     
     var totalTime = 0
     var secondsPassed = 0
     var mainLabel = "How do you like your eggs?"
 
     var timer = Timer()
+    var sound = playSound()
     
     @IBAction func buttons(_ sender: UIButton) {
         let hardness = sender.currentTitle!
-        
         
         stopButtonProp.isHidden = false
     
@@ -58,7 +58,7 @@ class ViewController: UIViewController {
             stopButtonProp.isHidden = true
             timer.invalidate()
             titleLabel.text = "Done!"
-            playSound()
+            sound.playSound()
             
             timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false){_ in
                 self.titleLabel.text = self.mainLabel
@@ -66,34 +66,4 @@ class ViewController: UIViewController {
             }
         }
     }
-    
-    var player: AVAudioPlayer?
-
-    func playSound() {
-        if #available(iOS 14.5, *) {
-             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-          }
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback)
-        } catch(let error) {
-            print(error.localizedDescription)
-        }
-        guard let url = Bundle.main.url(forResource: "alarm_sound", withExtension: "mp3") else { return }
-
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
-            
-            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
-
-
-            guard let player = player else { return }
-
-            player.play()
-
-        } catch let error {
-            print(error.localizedDescription)
-        }
-    }
-    
 }
