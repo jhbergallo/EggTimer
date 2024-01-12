@@ -17,6 +17,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         return true
     }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        var backgroundTask: UIBackgroundTaskIdentifier = .invalid // Declare backgroundTask here
+
+        backgroundTask = UIApplication.shared.beginBackgroundTask {
+            // This block is called when the background task expires.
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+        }
+
+        if let window = UIApplication.shared.windows.first,
+            let rootViewController = window.rootViewController as? ViewController {
+            if rootViewController.isTimerRunning {
+                // Continue running your timer in the background.
+                rootViewController.startTimer(withDuration: rootViewController.remainingTime)
+            }
+        }
+    }
+
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        if let window = UIApplication.shared.windows.first,
+            let rootViewController = window.rootViewController as? ViewController {
+            // Restore the timer state
+            rootViewController.restoreTimerState()
+        }
+    }
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
